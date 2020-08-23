@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title><%= title%></title>
+</head>
+<body>
+    <h2><%= title%></h2>
+    <div class="row">
+        <form id="empolyeeForm" autocomplete="off">
+            <div class="col-md-3">
+                <label for="">Person</label>
+                <input type="text" name="person" id="person"/>
+            </div>
+            <div class="col-md-3">
+                <label for="">Group</label>
+                <input type="number" id="group" name="group"/>
+            </div>
+            <div class="col-md-3">
+                <label for="">Age</label>
+                <input type="number" id="age" name="age"/>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" id="submitButton">Submit</button>
+            </div>
+            </form>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-6">
+                    <button type="button" id="allData" onclick="showDataInTable()">All Data</button>
+            </div>
+            <div class="col-md-6">
+                    <button type="button" id="filterButton" onclick="getFilterData()">Age Filter Namewise</button>
+            </div>
+        </div>
+    </div>
+    <div>
+        <table class="table table-striped" style="width: 50%;">
+            <thead>
+                <tr>
+                <th scope="col">Person</th>
+                <th scope="col">Group</th>
+                <th scope="col">Age</th>
+                </tr>
+            </thead>
+            <tbody tbody id="tableBody">
+                    <tr >
+                        <td colspan="3" style="text-align: center;">No Data</td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+<script>
+
+    /**
+     * desc  : function gets all data and binds data to table 
+     */
+    function showDataInTable(){
+        $.ajax({
+            url : '/route/form/getData',
+            type : 'GET',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success : function(result){
+                if(result.data.length){
+                    var html = '';
+                    for(var i = 0 ; i < result.data.length; i++){
+                        html += `<tr>
+                            <th>${result.data[i].person}</th>
+                            <th>${result.data[i].group}</th>
+                            <th>${result.data[i].age}</th>
+                        </tr>`
+                    }
+                    $("#tableBody").html('');
+                    $("#tableBody").html(html);
+                }
+            }
+        });
+    }
+
+    /**
+     * desc  : function gets filter agewise data and binds data to table 
+     */
+    function getFilterData(){
+        $.ajax({
+            url : '/route/form/filterAgeWise',
+            type : 'GET',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success : function(result){
+                if(result.data.length){
+                    var html = '';
+                    for(var i = 0 ; i < result.data.length; i++){
+                        html += `<tr>
+                            <th>${result.data[i].person}</th>
+                            <th>${result.data[i].group}</th>
+                            <th>${result.data[i].age}</th>
+                        </tr>`
+                    }
+                    $("#tableBody").html('');
+                    $("#tableBody").html(html);
+                }
+            }
+        });
+    }
+
+    $(document).ready(function(){
+
+        showDataInTable();
+
+        $("#empolyeeForm").validate({
+            submitHandler : function(form){
+                try{
+                    var formdata = {
+                        person : $('#person').val(),
+                        group : $('#group').val(),
+                        age : $('#age').val()
+                    }
+                    $.ajax({
+                        url : "/route/form/addData",
+                        type : "PUT",
+                        data : JSON.stringify(formdata),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success : function(result){
+                            alert("data saved");
+                            document.getElementById('empolyeeForm').reset();
+                            showDataInTable();
+                        }
+                    })
+                }catch(e){
+                    console.log(e)
+                }
+            }
+        });
+    });
+</script>
+</html>
