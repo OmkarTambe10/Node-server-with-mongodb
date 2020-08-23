@@ -13,7 +13,7 @@ app.use("/route/form", route);
 
 
 //connection of NoSQL database
-mongoose.connect('mongodb://127.0.0.1/dashboard', { useUnifiedTopology: true, useNewUrlParser: true, function(error, db){
+mongoose.connect('mongodb://127.0.0.1/dashboard', { useUnifiedTopology: true, useNewUrlParser: true}, function(error, db){
     if(error){
         console.log(error);
     }else{
@@ -21,5 +21,5 @@ mongoose.connect('mongodb://127.0.0.1/dashboard', { useUnifiedTopology: true, us
             console.log("Connected to port " + port );
         });    
     }
-}});
+});
 module.exports = app;
